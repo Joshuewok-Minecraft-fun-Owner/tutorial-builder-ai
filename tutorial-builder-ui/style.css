@@ -1,0 +1,36 @@
+body {
+    font-family: 'Minecraftia', monospace;
+    background: #1e1e1e;
+    color: #e0e0e0;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+input, textarea, button {
+    font-family: 'Minecraftia', monospace;
+    background: #2b2b2b;
+    color: #e0e0e0;
+    border: 2px solid #555;
+    padding: 8px;
+    margin: 5px 0;
+    width: 100%;
+}
+
+button {
+    cursor: pointer;
+}
+
+.step {
+    border: 2px solid #444;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.step-controls button {
+    width: auto;
+    margin-right: 5px;
+}
