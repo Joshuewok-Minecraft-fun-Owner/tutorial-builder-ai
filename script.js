@@ -89,7 +89,7 @@ function extractVideoID(url) {
 }
 
 async function fetchTranscript(videoId) {
-    const res = await fetch(`https://youtubetranscript.com/?video_id=${videoId}`);
+    const res = await fetch(`https://api.davidjames.dev/transcript?video=${videoId}`);
     if (!res.ok) throw new Error("Transcript not available");
     const data = await res.json();
     return data.map(x => x.text).join(" ");
@@ -168,4 +168,10 @@ function startTutorial() {
     tutorialStarted = true;
     alert("Tutorial started! Press SPACE or ENTER to add steps.");
     autoGenerate(); // AI auto-runs
+}
+async function fetchTranscript(videoId) {
+    const res = await fetch(`https://api.davidjames.dev/transcript?video=${videoId}`);
+    if (!res.ok) throw new Error("Transcript not available");
+    const data = await res.json();
+    return data.map(x => x.text).join(" ");
 }
