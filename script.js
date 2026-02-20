@@ -88,8 +88,6 @@ function extractVideoID(url) {
     return match ? match[1] : null;
 }
 
-async function fetchTranscript(videoId) {
-    const res = await fetch(`https://yt.lemnoslife.com/videos?part=transcript&id=${videoId}`);
     if (!res.ok) throw new Error("Transcript not available");
 
     const data = await res.json();
@@ -110,74 +108,23 @@ function transcriptToText(text) {
 // ONE-LINE OpenRouter + safeJSON
 // ===============================
 
-async function callOpenRouter(prompt){const apiKey="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";const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Authorization":`Bearer ${apiKey}`,"Content-Type":"application/json"},body:JSON.stringify({model:"mistralai/mistral-7b-instruct",messages:[{role:"system",content:"You extract clean tutorial steps from transcripts. Always return valid JSON."},{role:"user",content:prompt}]})});const d=await r.json();return d.choices[0].message.content;}
 
-function safeJSON(text) { try { return JSON.parse(text); } catch { const match = text.match(PLACEHOLDER_REGEX); return match ? JSON.parse(match[0]) : null; } }
-
-// ===============================
-// LOAD AI STEPS INTO MANUAL UI
-// ===============================
-
-function loadAIGeneratedSteps(aiSteps) {
-    steps = aiSteps.map(s => ({
-        timestamp: s.timestamp,
-        text: s.text
-    }));
-    renderSteps();
-}
-
-// ===============================
-// AUTO-GENERATE PIPELINE
-// ===============================
-
-async function autoGenerate() {
-    const url = document.getElementById("ytLink").value;
-    const videoId = extractVideoID(url);
-
-    if (!videoId) {
-        alert("Invalid YouTube URL");
-        return;
-    }
-
-    try {
-        const transcript = await fetchTranscript(videoId);
-
-        const prompt = `
-Extract clear tutorial steps from this transcript.
-Return ONLY JSON in this format:
-
-[
-  { "timestamp": 0, "text": "Step instruction" }
-]
-
-Transcript:
-${transcript}
-        `;
-
-        const aiResponse = await callOpenRouter(prompt);
-        const parsed = safeJSON(aiResponse);
-
-        if (!parsed) {
-            alert("AI returned invalid JSON");
-            console.log(aiResponse);
-            return;
-        }
-
-        loadAIGeneratedSteps(parsed);
-
-    } catch (err) {
-        alert("Error: " + err.message);
-        console.error(err);
-    }
-}
-function startTutorial() {
-    tutorialStarted = true;
-    alert("Tutorial started! Press SPACE or ENTER to add steps.");
-    autoGenerate(); // AI auto-runs
-}
-async function fetchTranscript(videoId) {
-    const res = await fetch(`https://api.davidjames.dev/transcript?video=${videoId}`);
-    if (!res.ok) throw new Error("Transcript not available");
-    const data = await res.json();
-    return data.map(x => x.text).join(" ");
+async function callOpenRouter(prompt){
+    const apiKey = "YOUR_OPENROUTER_KEY_HERE";
+    const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": \`Bearer \${apiKey}\`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "mistralai/mistral-7b-instruct",
+            messages: [
+                { role: "system", content: "You extract clean tutorial steps from transcripts. Always return valid JSON." },
+                { role: "user", content: prompt }
+            ]
+        })
+    });
+    const d = await r.json();
+    return d.choices[0].message.content;
 }
