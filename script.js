@@ -88,6 +88,8 @@ function extractVideoID(url) {
     return match ? match[1] : null;
 }
 
+async function fetchTranscript(videoId) {
+    const res = await fetch(`https://yt.lemnoslife.com/videos?part=transcript&id=${videoId}`);
     if (!res.ok) throw new Error("Transcript not available");
 
     const data = await res.json();
@@ -109,12 +111,13 @@ function transcriptToText(text) {
 // ===============================
 
 
-async function callOpenRouter(prompt){
-    const apiKey = "YOUR_OPENROUTER_KEY_HERE";
+async function callOpenRouter(prompt) {
+    const apiKey = "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";
+
     const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-            "Authorization": \`Bearer \${apiKey}\`,
+            "Authorization": `Bearer ${apiKey}`,
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -125,6 +128,7 @@ async function callOpenRouter(prompt){
             ]
         })
     });
+
     const d = await r.json();
     return d.choices[0].message.content;
 }
