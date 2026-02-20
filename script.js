@@ -107,16 +107,20 @@ function extractVideoID(url) {
 }
 
 async function fetchTranscript(videoId) {
-    const res = await fetch(`https://yt.lemnoslife.com/videos?part=transcript&id=${videoId}`);
-    if (!res.ok) throw new Error("Transcript not available");
+    const res = await fetch(`https://youtubetranscript.com/?server_vid=${videoId}`);
+
+    if (!res.ok) {
+        throw new Error("Transcript not available");
+    }
 
     const data = await res.json();
 
-    if (!data.items || !data.items[0] || !data.items[0].transcript) {
+    if (!data || !data.transcript) {
         throw new Error("Transcript missing");
     }
 
-    return data.items[0].transcript.map(x => x.text).join(" ");
+    // Join all text segments into one big transcript
+    return data.transcript.map(x => x.text).join(" ");
 }
 
 // Convert transcript to readable text (optional)
