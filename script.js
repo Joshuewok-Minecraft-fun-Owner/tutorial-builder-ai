@@ -105,7 +105,7 @@ function transcriptToText(text) {
 // ONE-LINE OpenRouter + safeJSON
 // ===============================
 
-async function callOpenRouter(prompt){const apiKey="YOUR_OPENROUTER_KEY_HERE";const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Authorization":`Bearer ${apiKey}`,"Content-Type":"application/json"},body:JSON.stringify({model:"mistralai/mistral-7b-instruct",messages:[{role:"system",content:"You extract clean tutorial steps from transcripts. Always return valid JSON."},{role:"user",content:prompt}]})});const d=await r.json();return d.choices[0].message.content;}
+async function callOpenRouter(prompt){const apiKey="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";const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",headers:{"Authorization":`Bearer ${apiKey}`,"Content-Type":"application/json"},body:JSON.stringify({model:"mistralai/mistral-7b-instruct",messages:[{role:"system",content:"You extract clean tutorial steps from transcripts. Always return valid JSON."},{role:"user",content:prompt}]})});const d=await r.json();return d.choices[0].message.content;}
 
 function safeJSON(text) { try { return JSON.parse(text); } catch { const match = text.match(PLACEHOLDER_REGEX); return match ? JSON.parse(match[0]) : null; } }
 
