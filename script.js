@@ -88,7 +88,6 @@ function extractVideoID(url) {
     return match ? match[1] : null;
 }
 
-// Fetch transcript from free API
 async function fetchTranscript(videoId) {
     const res = await fetch(`https://youtubetranscript.com/?video_id=${videoId}`);
     if (!res.ok) throw new Error("Transcript not available");
