@@ -5,7 +5,6 @@ let tutorialStarted = false;
 // MANUAL TUTORIAL BUILDER
 // ===============================
 
-
 function addStep() {
     if (!tutorialStarted) return;
     let timestamp = prompt("Enter timestamp (e.g., 42 for 42 seconds):");
@@ -79,8 +78,9 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ===============================
-// AUTO-GENERATE TUTORIAL (OpenRouter)
+// AUTO-GENERATE TUTORIAL
 // ===============================
+
 async function startTutorial() {
     const url = document.getElementById("youtubeLink").value;
     const videoId = extractVideoID(url);
@@ -100,11 +100,14 @@ async function startTutorial() {
     }
 }
 
-// Extract video ID from YouTube URL
 function extractVideoID(url) {
     const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
     return match ? match[1] : null;
 }
+
+// ===============================
+// CORS-SAFE TRANSCRIPT API
+// ===============================
 
 async function fetchTranscript(videoId) {
     const res = await fetch(`https://youtubetranscript.com/?server_vid=${videoId}`);
@@ -119,22 +122,19 @@ async function fetchTranscript(videoId) {
         throw new Error("Transcript missing");
     }
 
-    // Join all text segments into one big transcript
     return data.transcript.map(x => x.text).join(" ");
 }
 
-// Convert transcript to readable text (optional)
 function transcriptToText(text) {
     return text;
 }
 
 // ===============================
-// ONE-LINE OpenRouter + safeJSON
+// OPENROUTER AI
 // ===============================
 
-
 async function callOpenRouter(prompt) {
-    const apiKey = "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";
+    const apiKey = "YOUR_OPENROUTER_KEY_HERE";
 
     const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
@@ -153,4 +153,30 @@ async function callOpenRouter(prompt) {
 
     const d = await r.json();
     return d.choices[0].message.content;
+}
+
+// ===============================
+// AI → STEPS PIPELINE
+// ===============================
+
+async function autoGenerate(transcript) {
+    const prompt = `Extract clear, numbered tutorial steps from this transcript:\n\n${transcript}`;
+    const raw = await callOpenRouter(prompt);
+
+    try {
+        return JSON.parse(raw);
+    } catch {
+        console.warn("AI returned non-JSON, attempting safe parse");
+        return [{ step: "AI output error", raw }];
+    }
+}
+
+function displaySteps(generated) {
+    steps = generated.map((s, i) => ({
+        timestamp: i * 10,
+        text: s.text || s.step || JSON.stringify(s)
+    }));
+
+    tutorialStarted = true;
+    renderSteps();
 }
