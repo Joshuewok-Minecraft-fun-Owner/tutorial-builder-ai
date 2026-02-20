@@ -81,6 +81,24 @@ document.addEventListener("keydown", (e) => {
 // ===============================
 // AUTO-GENERATE TUTORIAL (OpenRouter)
 // ===============================
+async function startTutorial() {
+    const url = document.getElementById("youtubeLink").value;
+    const videoId = extractVideoID(url);
+
+    if (!videoId) {
+        alert("Invalid YouTube link");
+        return;
+    }
+
+    try {
+        const transcript = await fetchTranscript(videoId);
+        const steps = await autoGenerate(transcript);
+        displaySteps(steps);
+    } catch (err) {
+        console.error(err);
+        alert("Error: " + err.message);
+    }
+}
 
 // Extract video ID from YouTube URL
 function extractVideoID(url) {
